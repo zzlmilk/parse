@@ -1,0 +1,92 @@
+form(method="post",enctype="multipart/form-data")
+   p 继续上传
+    input(type="file" name="file")
+    p
+    input(type="submit" value="Upload")
+
+h2  检测简历基本信息  
+img(src='#{resume.headerImg}')
+p 姓名： #{resume.name}
+p 手机： #{resume.phone}
+p 邮箱： #{resume.email}
+p qq:  #{resume.qq}
+p 来源： #{resume.source}
+p 性别： #{resume.sex}
+//- p 年龄： #{resume.age}
+p 生日： #{resume.birth}
+p 婚姻： #{resume.marriage}
+p 工作经验： #{resume.exp}
+p 身份证: #{resume.nationid}
+p 民族: #{resume.nation}
+p 吸纳距地居住地/区市： #{resume.city} |#{resume.province}
+p 收入 #{resume.last_job_salary}
+
+h2 求职意向
+p 期望工作行业 ： #{resume.job_objective.industries}
+p 工作状态的描述 ：#{resume.job_objective.status_msg}
+p 期望工作类型 ： #{resume.job_objective.expect_worktype}
+p 期望工作城市  ：#{resume.job_objective.city}
+p 期望工作省会  ：#{resume.job_objective.province}
+p 期望薪资范围  ：#{resume.job_objective.expect_salary_floor}～#{resume.job_objective.expect_salary_upper}
+
+
+
+h2 自我评价
+p #{resume.self_evaluate}
+
+
+h2 教育经历 
+- for (var i = 0; i < resume.education.length; i++)
+  p #{resume.education[i].school_year_start} - #{resume.education[i].school_year_end}
+  p #{resume.education[i].school_name} 
+  p 专业 ：#{resume.education[i].major_name} 
+  p 学历：#{resume.education[i].degree_level}
+  p 是否好学校：#{resume.education[i].school_level}
+  p -----------------------------------
+
+
+h2 工作经历
+- for (var i = 0; i < resume.workexp.length; i++)
+  p #{resume.workexp[i].job_year_start} - #{resume.workexp[i].job_year_end} 
+  p 公司名：#{resume.workexp[i].job_company}  #{resume.workexp[i].job_compsize}
+  p 行业于职能：#{resume.workexp[i].industry} ｜#{resume.workexp[i].predicted_job_function} 
+  p 职位：#{resume.workexp[i].job_title}  #{resume.workexp[i].job_spec} #{resume.workexp[i].job_comptype}
+  p 收入:#{resume.workexp[i].job_salary}/月
+  p 工作描述： #{resume.workexp[i].job_text}
+  p 回报对象: #{resume.workexp[i].report_to}
+  p -----------------------------------
+
+h2 项目经验
+-for (var i = 0; i < resume.projects.length; i++)
+  p #{resume.projects[i].p_year_start} - #{resume.projects[i].p_year_end} 
+  p 项目名称：#{resume.projects[i].p_name}
+  p 项目描述：#{resume.projects[i].project_escription} 
+  p 项目职位 :#{resume.projects[i].post} 
+  p -----------------------------------
+
+h2 实习经验
+-for (var i = 0; i < resume.internships.length; i++)
+  p #{resume.internships[i].internships_year_start} - #{resume.internships[i].internships_year_end} 
+  p 项目名：#{resume.internships[i].title}
+  p -----------------------------------
+
+
+h2 技能
+p #{resume.skills} 
+p #{resume.skills_extract}
+p -----------------------------------
+
+
+h2 语言 
+p #{resume.languages_language} 
+p #{resume.extract}
+  p -----------------------------------
+
+h2 证书 
+p #{resume.certificates_certificates} 
+p #{resume.certificates_extract}
+p -----------------------------------
+
+
+
+
