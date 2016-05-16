@@ -18,13 +18,13 @@ var Workexp= sequelize.define('resume_workexperiences', {
 
          not_ended:{type : Sequelize.INTEGER},
          job_compsize:{type : Sequelize.STRING},
-         underling_umber:{type : Sequelize.STRING},
+         //underling_umber:{type : Sequelize.STRING},
          report_to:{type : Sequelize.STRING},
-         company_text:{type : Sequelize.STRING},
+         //company_text:{type : Sequelize.STRING},
          industry:{type : Sequelize.STRING},
          predicted_job_function:{type : Sequelize.STRING},
-         work_place:{type : Sequelize.STRING},
-         work_performance:{type : Sequelize.STRING},
+         //work_place:{type : Sequelize.STRING},
+        //work_performance:{type : Sequelize.STRING},
 
 
 

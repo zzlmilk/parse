@@ -7,6 +7,7 @@ var Workexp = require('./workexp').workexp;
 var Project = require('./project').project;
 var Language = require('./skill').language;
 var Skill = require('./skill').skill;
+var Reward = require('./resume_reward').reward;
 var Resume_additional = require('./resume_additional').resume_additional;
 var Resume_status = require('./resume_additional').resume_status;
 
@@ -14,8 +15,12 @@ var _ = require('lodash');
 var async =require('async');
 
 
+
 var Resume = sequelize.define('resume_inherits', {
          id : {type : Sequelize.INTEGER,autoIncrement : true, primaryKey : true, unique : true },
+         user_id:{type:Sequelize.INTEGER},
+         upload_uid:{type:Sequelize.INTEGER},
+         upload_uname:{type : Sequelize.STRING},
          name:{type : Sequelize.STRING,allowNull: true},
          phone:{type : Sequelize.STRING},
          email: {type : Sequelize.STRING},
@@ -30,11 +35,12 @@ var Resume = sequelize.define('resume_inherits', {
          marriage:{type : Sequelize.INTEGER},
          nationid:{type : Sequelize.STRING},
          city:{type:Sequelize.STRING},
+         price:{type:Sequelize.FLOAT},
          province:{type:Sequelize.STRING},
          nation:{type:Sequelize.STRING},
-
-
-       
+         status:{type : Sequelize.INTEGER},
+         source:{type : Sequelize.STRING},
+                
          month_salary:{type:Sequelize.INTEGER},
          resume_photo:{type:Sequelize.STRING},
 
@@ -50,28 +56,44 @@ var Resume = sequelize.define('resume_inherits', {
          internships_text:{type:Sequelize.TEXT},
          skills_extract:{type:Sequelize.TEXT},
          certificates_extract:{type:Sequelize.TEXT},
-         certificates_text:{type:Sequelize.TEXT},
+         //certificates_text:{type:Sequelize.TEXT},
+         resume_complete_score:{type:Sequelize.INTEGER},
          languages_extract:{type:Sequelize.TEXT},
          resume_create_time:{type:Sequelize.DATE},
          resume_update_time:{type:Sequelize.DATE},
+         school:{type:Sequelize.STRING},
+
+          educations_text:{type:Sequelize.TEXT},
+          projects_text:{type:Sequelize.TEXT},
+          workexps_text:{type:Sequelize.TEXT},
+          certificates_text:{type:Sequelize.TEXT},
+          fime_name:{type:Sequelize.STRING},
+          resume_secret:{type:Sequelize.INTEGER},
 
 
       },
        {freezeTableName:true,timestamps:false} 
      )
 
+
     Resume.hasMany(Education, {foreignKey: 'resume_id',as:"educations"});
     Resume.hasMany(Workexp,   {foreignKey: 'resume_id',as:"workexps"});
     Resume.hasMany(Project,   {foreignKey: 'resume_id',as:"projects"});
     Resume.hasMany(Language,  {foreignKey: 'resume_id',as:"languages"});
     Resume.hasMany(Skill,     {foreignKey: 'resume_id',as:"skills"});
+    Resume.hasMany(Reward,    {foreignKey: 'resume_id',as:"rewards"});
     Resume.hasOne(Resume_additional, {foreignKey: 'resume_id',as:"resume_additional"});
     Resume.hasOne(Resume_status,     {foreignKey: 'resume_id',as:"resume_status"});
 
-
-
 exports.bulidReusme = function (resume,callback) {
+    
         Resume.build({
+            user_id : 70,
+            status:0,  //默认已上传
+            upload_uid:70,
+            upload_uname:"周大作",
+            source:"rex上传的简历",
+            price:3,
             name:resume.name,
             phone:resume.phone,
             email:resume.email,
@@ -79,6 +101,7 @@ exports.bulidReusme = function (resume,callback) {
             sex:resume.sex,
             age:resume.age,
             birth:resume.birth,
+            resume_complete_score:resume.resume_complete_score,
 
             //dict_marries_id:resume.dict_marries_id,
             work_year:resume.exp,
@@ -87,7 +110,7 @@ exports.bulidReusme = function (resume,callback) {
             province:resume.province,
             nation:resume.nation,
             nationid:resume.nationid,
-            //month_salary:resume.last_job_salary,
+            month_salary:resume.last_job_salary,
             resume_photo:resume.resume_photo,
 
             //自我评价
@@ -104,19 +127,24 @@ exports.bulidReusme = function (resume,callback) {
 
 
              //证书
-            certificates_text:_.join(resume.certificates_certificates,","),
-            certificates_extract:_.join(resume.certificates_extract,","),
+            //certificates_text:_.join(resume.certificates_certificates,";"),
+            certificates_extract:_.join(resume.certificates_extract,";"),
 
              //语言和技能的extract
-             skills_extract:_.join(resume.skills_extract,","),
-             languages_extract:_.join(resume.languages_extract,","),
+             skills_extract:_.join(resume.skills_extract,";"),
 
+             languages_extract:_.join(resume.languages_extract,";"),
 
+             
+             educations_text:_.join(resume.education,";"),
 
+              projects_text:_.join(resume.projects,";"),
+              workexps_text:_.join(resume.workexp,";"),
+          
 
-           
-            resume_create_time:resume.resume_create_time,
-            resume_update_time:resume.resume_update_time,
+             fime_name:resume.fime_name,
+             resume_create_time:new Date(Date.now() + (8 * 60 * 60 * 1000)),
+             resume_update_time:new Date(Date.now() + (8 * 60 * 60 * 1000)),
 
         }).save().then(function(r) {
             if (!r.id) {return};
@@ -127,14 +155,14 @@ exports.bulidReusme = function (resume,callback) {
                          doc_name:resume.doc_name,
                          file_type:resume.file_type,
                          complete_score:resume.complete_score,
-                         create_time:resume.create_time,
+                         create_time:resume.crrent_time,
                          upload_user_id:70,
                      }).save().then(function(addtion){
                             console.log("addtion save");
                      });
                     },
                  function (id,cb) { 
-                    if (resume.education) return;       
+                    if (!resume.education) return;       
                     resume.education.forEach(function (e) {
                      // body...
                     Education.build({
@@ -157,6 +185,7 @@ exports.bulidReusme = function (resume,callback) {
                     // body...
                         Workexp.build({
                         resume_id:id,
+
                         company:w.job_company,
                         job_months:w.job_months,
                         job_title:w.job_title,
@@ -233,8 +262,20 @@ exports.bulidReusme = function (resume,callback) {
                     })
                     
                     },
+                    function (id,cb) {
+                         Reward.build({
+                               resume_id:r.id,
+                               employer_account_id:70,
+                               increase:3,
+                               type:0,
+                               expiration_time: resume.crrent_time,
+                        }).save().then(function (argument) {
+                            // body...
+                            console.log("Reward save")
+                        })
+                    },
                     function(id,cb){
-
+                       
                     },
                     function(id,cb){
 
@@ -262,14 +303,34 @@ exports.findResumeDetailByphone = function (phone,cb) {
 
 
 
+exports.findResumeDetailByphoneForDelete = function (phone,cb) {
+    Resume.findOne({ where: { phone: phone } ,include:[
+        {model: Education ,as :"educations" },
+        {model: Workexp ,as :"workexps" },
+        {model: Project ,as :"projects" },
+        {model: Language ,as :"languages" },
+        {model: Skill ,as :"skills" },
+        {model:Reward ,as :"rewards"}, 
+        {model:Resume_additional ,as :"resume_additional"}
+    ]
+
+    }).then(function(resume) {
+  //bs.cname = 'jane' 
+        cb(resume);
+    })  
+}
 
 
-
-
-
-// Resume.findById(4000).then(function(r){
-//     console.log(r);
+// this.findResumeDetailByphoneForDelete("15088062234",function  (res) {
+//     console.log(res)
+//     // body...
 // })
+
+
+
+
+
+
 
 
 

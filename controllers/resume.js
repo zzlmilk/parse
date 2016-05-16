@@ -14,7 +14,6 @@ exports.postResume = function  (req,res,next) {
             // body...           
              filename =file.originalFilename.split('/');
              
-
              filename =filename[filename.length-1]
                           
             file.path = file.path;
@@ -38,20 +37,50 @@ exports.postResume = function  (req,res,next) {
 
 exports.createResume = function(data,cb){
   if (!data) {return};
+  
+    if (!data.phone) {
+         console.log("phone is null");
+      return
+    };
 
    Resume.findResumeDetailByphone(data.phone,function(r){
         if (!r) {
-          Resume.bulidReusme(data,function(r){          
-           cb(r)
-        })
-      }
+                  Resume.bulidReusme(data,function(r){   
+                
+                   cb(r)
+                })
+              }
         else{
-          
           console.log("resume has one");
+        cb(null)          
+        
+        }        
+    })
+}
+
+
+
+
+exports.deleteResume = function(data){
+  if (!data) {return};
+
+   Resume.findResumeDetailByphoneForDelete(data.phone,function(r){
+
+        r.destroy();
+        
+        if (!r) {
+            
+      }
+        else{          
+          console.log("resume has one");
+          // 
         }
         
     })
 }
+
+
+
 
 
 
